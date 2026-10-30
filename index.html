@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Skyscrapers · OADO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#14202B;--mute:#566270;--bg:#F2F4F7;--card:#fff;--line:#D5DAE1;--navy:#1F3A5F;--red:#B3261E;--green:#1B7F4B;--wood:#F6E6CF;--woodink:#6B4310;--ctl:#8A94A1}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'Barlow',system-ui,-apple-system,'Segoe UI',sans-serif;-webkit-text-size-adjust:100%}
+body{min-height:100vh;min-height:100dvh}
+#app{max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+.screen{flex:1;display:flex;flex-direction:column;gap:12px;padding:20px 20px 12px;padding-top:calc(20px + env(safe-area-inset-top,0px))}
+.num{font-family:'Barlow Condensed','Barlow',system-ui,sans-serif;font-weight:700}
+h1{margin:0;font-family:'Barlow Condensed','Barlow',system-ui,sans-serif;font-size:34px;line-height:1.05;font-weight:700}
+.kicker{font-size:14px;color:var(--mute);font-weight:500}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.card h2{margin:0;font-size:14px;font-weight:700}
+.hint{font-size:13px;color:var(--mute);line-height:1.4}
+button,.btn{font-family:inherit;cursor:pointer}
+.btn{display:flex;align-items:center;justify-content:center;min-height:54px;border-radius:14px;border:0;background:var(--navy);color:#fff;font-size:16px;font-weight:700;text-decoration:none;padding:0 18px;width:100%}
+.btn.sec{background:#fff;color:var(--navy);border:2px solid var(--navy);min-height:48px;font-size:15px}
+.btn[disabled]{background:#C3CAD3;color:#4A5563;cursor:not-allowed}
+.btn.split{justify-content:space-between}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:#E1E6EC;border-radius:12px;padding:4px;gap:4px}
+.seg button{min-height:44px;border-radius:9px;border:0;background:transparent;color:var(--ink);font-size:15px;font-weight:600}
+.seg button[aria-pressed=true]{background:var(--navy);color:#fff;font-weight:700}
+.steprow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.step{display:flex;align-items:center;gap:8px}
+.step button{width:44px;height:44px;border-radius:12px;border:1px solid var(--ctl);background:#fff;color:var(--ink);font-size:22px}
+.step button.plus{background:var(--navy);border-color:var(--navy);color:#fff}
+.step input{width:56px;height:44px;text-align:center;border:1px solid var(--ctl);border-radius:10px;font-size:26px;font-family:'Barlow Condensed','Barlow',sans-serif;font-weight:700;color:var(--ink);background:#fff}
+.lbl{font-size:15px;font-weight:600}.sub{font-size:12px;color:var(--mute)}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:14px;font-weight:600}
+.field input{height:48px;border:1px solid var(--ctl);border-radius:10px;padding:0 14px;font-size:16px;font-family:inherit;color:var(--ink);background:#fff}
+.teams{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.teams button{min-height:52px;border-radius:12px;border:2px solid var(--ctl);background:#fff;color:var(--ink);font-size:16px;font-weight:600}
+.teams button[aria-pressed=true]{background:var(--navy);border-color:var(--navy);color:#fff}
+.teams button[disabled]{border:2px dashed #C3CAD3;background:var(--bg);color:#5C6674;font-size:14px;cursor:not-allowed}
+.tag{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;border-radius:13px;font-size:12px;font-weight:700}
+.tag.val{background:var(--navy);color:#fff}.tag.att{background:var(--wood);color:var(--woodink)}.tag.sim{background:#fff;color:var(--ink);border:1px dashed var(--mute)}.tag.nc{background:#fff;color:var(--red);border:2px solid var(--red)}
+.neg{color:var(--red)}.pos{color:var(--green)}
+.big{font-size:56px;line-height:1}
+.bilan{font-size:14px;font-style:italic;color:var(--mute);padding-top:8px;margin-top:6px;border-top:1px dashed var(--line)}
+.line{display:flex;align-items:center;justify-content:space-between;min-height:52px;border-bottom:1px solid #E8ECF0}
+.line:last-child{border-bottom:0}
+.msg{border-radius:12px;padding:10px 14px;font-size:14px;line-height:1.4}
+.msg.err{background:#FBE9E7;color:#7A1A14}.msg.warn{background:var(--wood);color:var(--woodink)}.msg.ok{background:#E3F3EA;color:#14583A}.msg.info{background:#E6ECF4;color:var(--ink)}
+nav.tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:#fff;border-top:1px solid var(--line);height:64px;padding-bottom:env(safe-area-inset-bottom,0px)}
+nav.tabs button{background:none;border:0;border-top:3px solid transparent;font-size:14px;font-weight:600;color:var(--mute)}
+nav.tabs button[aria-current=page]{color:var(--navy);font-weight:700;border-top-color:var(--navy)}
+.foot{margin-top:auto;display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:8px}
+.link{background:none;border:0;color:var(--navy);font-size:14px;font-weight:600;min-height:44px;text-decoration:underline}
+button:focus-visible,input:focus-visible{outline:3px solid #E8B873;outline-offset:2px}
+</style>
+</head>
+<body>
+<div id="app" aria-live="polite"></div>
+<script src="config.js"></script>
+<script src="engine.js"></script>
+<script>
+(function () {
+  'use strict';
+  var CFG = window.SKS_CONFIG || {};
+  var DEMO = !CFG.API_URL;
+  var app = document.getElementById('app');
+
+  /* ---------- utilitaires ---------- */
+  function esc(t) { return String(t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  // Stockage local du téléphone ; repli en mémoire si le navigateur le bloque (navigation privée, par exemple)
+  var mem = {};
+  function lsGet(k, d) {
+    try { var v = localStorage.getItem(k); if (v !== null) return JSON.parse(v); } catch (e) { /* stockage indisponible */ }
+    return mem[k] !== undefined ? mem[k] : d;
+  }
+  function lsSet(k, v) { mem[k] = v; try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* stockage indisponible */ } }
+  function uuid() {
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 12);
+  }
+  function cls(n) { return n < 0 ? 'neg' : (n > 0 ? 'pos' : ''); }
+
+  /* ---------- état ---------- */
+  var q = new URLSearchParams(location.search);
+  var state = {
+    code: String(q.get('s') || (DEMO ? 'SKS000_26' : '')).trim().toUpperCase(),
+    seance: null, params: SKS.params(), chargement: true, erreur: '',
+    vue: 'accueil', eq: null, nom: '', k: 1, type: 'officiel',
+    f: { m: 0, sec: 0, b: 0, h: 0, l: 0, ep: 0 }, touche: false,
+    lignes: [], envoi: null, horsLigne: false
+  };
+
+  /* ---------- API (ou démonstration locale) ---------- */
+  function appel(url, opts) {
+    var ctrl = new AbortController(), t = setTimeout(function () { ctrl.abort(); }, 15000);
+    opts = opts || {}; opts.signal = ctrl.signal;
+    return fetch(url, opts).then(function (r) { clearTimeout(t); if (!r.ok) throw new Error('http'); return r.json(); },
+                                 function (e) { clearTimeout(t); throw e; });
+  }
+  function demoCle(eq) { return 'sks.demo.' + state.code + '.' + eq; }
+  function apiSession() {
+    if (DEMO) return Promise.resolve({ ok: true, seance: { code: state.code, equipes: 2, statut: 'ouverte' }, params: SKS.DEFAULTS });
+    return appel(CFG.API_URL + '?action=session&s=' + encodeURIComponent(state.code));
+  }
+  function apiListe() {
+    if (DEMO) return Promise.resolve({ ok: true, lignes: lsGet(demoCle(state.eq), []) });
+    return appel(CFG.API_URL + '?action=list&s=' + encodeURIComponent(state.code) + '&eq=' + state.eq);
+  }
+  function apiEnvoi(p) {
+    if (DEMO) {
+      var l = lsGet(demoCle(p.eq), []);
+      if (p.type === 'officiel') l.forEach(function (x) { if (x.type === 'officiel' && x.k === p.k && x.statut === 'à valider') x.statut = 'remplacé'; });
+      var calc = SKS.calculer({ minutes: p.m, secondes: p.sec, briques: p.b, h: p.h, l: p.l, e: p.ep }, state.params);
+      var statut = p.type === 'officiel' ? 'à valider' : 'simulation';
+      l.push({ id: p.cid.slice(0, 8), k: p.k, type: p.type, statut: statut, minutes: p.m, secondes: p.sec, briques: p.b, h: p.h, l: p.l, e: p.ep,
+               horodatage: new Date().toISOString(), calc: calc, net: calc.net, retenu: calc.net });
+      lsSet(demoCle(p.eq), l.filter(function (x) { return x.statut !== 'remplacé'; }));
+      return Promise.resolve({ ok: true, id: p.cid.slice(0, 8), statut: statut, calc: calc, retenu: calc.net });
+    }
+    return appel(CFG.API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(p) });
+  }
+
+  /* ---------- file d'envoi (tolérance aux coupures réseau) ---------- */
+  var enCours = false;
+  function file() { return lsGet('sks.file', []); }
+  function traiterFile() {
+    if (enCours) return;
+    var f = file(); if (!f.length) return;
+    enCours = true;
+    var p = f[0];
+    apiEnvoi(p).then(function (r) {
+      enCours = false;
+      var garder = !r.ok && r.code === 'occupe';
+      if (!garder) lsSet('sks.file', file().filter(function (x) { return x.cid !== p.cid; }));
+      if (state.envoi && state.envoi.cid === p.cid) {
+        state.envoi = r.ok ? { cid: p.cid, etat: 'ok', statut: r.statut, doublon: !!r.doublon, avertissements: r.avertissements || [] }
+                           : { cid: p.cid, etat: garder ? 'hors-ligne' : 'erreur', message: r.error };
+      }
+      state.horsLigne = false;
+      actualiser().then(function () { render(); traiterFile(); });
+    }, function () {
+      enCours = false; state.horsLigne = true;
+      if (state.envoi && state.envoi.cid === p.cid) state.envoi = { cid: p.cid, etat: 'hors-ligne' };
+      render();
+    });
+  }
+  window.addEventListener('online', traiterFile);
+  setInterval(traiterFile, 15000);
+
+  function actualiser() {
+    if (!state.eq) return Promise.resolve();
+    return apiListe().then(function (r) {
+      if (r.ok) { state.lignes = r.lignes; lsSet('sks.' + state.code + '.lignes.' + state.eq, r.lignes); }
+    }, function () { state.lignes = lsGet('sks.' + state.code + '.lignes.' + state.eq, state.lignes); });
+  }
+
+  /* ---------- calculs de la vue ---------- */
+  function entrees() { var f = state.f; return { minutes: f.m, secondes: f.sec, briques: f.b, h: f.h, l: f.l, e: f.ep }; }
+  function controle() { return SKS.valider(entrees(), state.params); }
+  function calcul() { var c = controle(); return c.ok ? SKS.calculer(entrees(), state.params) : null; }
+  function officiel(k) {
+    var l = state.lignes.filter(function (x) { return x.type === 'officiel' && x.k === k && x.retenu !== undefined; });
+    return l.length ? l[l.length - 1] : null;
+  }
+
+  /* ---------- vues ---------- */
+  var LOGO = '<svg width="56" height="56" viewBox="0 0 56 56" role="img" aria-label="Logo Skyscrapers"><rect width="56" height="56" rx="14" fill="#1F3A5F"/><rect x="14" y="38" width="28" height="5" rx="1" fill="#E8B873"/><rect x="18" y="31" width="20" height="5" rx="1" fill="#E8B873"/><rect x="22" y="24" width="12" height="5" rx="1" fill="#E8B873"/><rect x="26" y="12" width="4" height="10" rx="1" fill="#E8B873"/></svg>';
+
+  function bandeau() {
+    var h = '';
+    if (DEMO) h += '<div class="msg info">Mode démonstration : vos saisies restent sur ce téléphone.</div>';
+    if (state.horsLigne) h += '<div class="msg warn">Réseau indisponible : vos envois partiront dès le retour de la connexion.</div>';
+    return h;
+  }
+
+  function vueAccueil() {
+    if (state.chargement) return '<main class="screen"><p class="hint">Chargement…</p></main>';
+    if (state.erreur) {
+      return '<main class="screen">' + LOGO + '<h1>Skyscrapers</h1><div class="msg err">' + esc(state.erreur) + '</div>' +
+             '<button class="btn" data-action="reessayer">Réessayer</button></main>';
+    }
+    var max = state.params.equipesMax || 4, nb = state.seance ? state.seance.equipes : 2, b = '';
+    for (var n = 1; n <= max; n++) {
+      b += n <= nb
+        ? '<button type="button" data-action="equipe" data-n="' + n + '" aria-pressed="' + (state.eq === n) + '">Équipe ' + n + '</button>'
+        : '<button type="button" disabled>Équipe ' + n + ' · non ouverte</button>';
+    }
+    return '<main class="screen"><div style="display:flex;flex-direction:column;gap:12px;padding-top:24px">' + LOGO +
+      '<h1 style="font-size:44px;letter-spacing:.5px">Skyscrapers</h1>' +
+      '<p class="hint" style="font-size:16px;margin:0">OADO : Outil d\u2019Aide à la Décision Optimale</p></div>' + bandeau() +
+      '<div class="card" style="padding:20px;gap:18px"><div class="field"><div class="lbl" style="font-size:14px">Votre équipe</div><div class="teams">' + b + '</div></div>' +
+      '<div class="field"><label for="nom">Nom d\u2019équipe <span style="font-weight:400;color:var(--mute)">(facultatif)</span></label>' +
+      '<input id="nom" data-nom maxlength="40" autocomplete="off" placeholder="Pas de noms de personnes" value="' + esc(state.nom) + '"></div>' +
+      '<button class="btn" data-action="entrer"' + (state.eq ? '' : ' disabled') + '>Entrer sur le chantier</button></div>' +
+      '<div class="foot"><p class="hint" style="text-align:center;margin:0">Aucune installation, aucun compte. Vos résultats sont enregistrés pour toute l\u2019équipe.</p>' +
+      '<div style="font-size:12px;color:var(--mute);letter-spacing:.4px">Atelier ' + esc(state.code) + '</div></div></main>';
+  }
+
+  function stepper(champ, label, sous, min, max) {
+    var v = state.f[champ];
+    return '<div class="steprow"><div><div class="lbl">' + label + '</div>' + (sous ? '<div class="sub">' + sous + '</div>' : '') + '</div>' +
+      '<div class="step"><button type="button" data-action="pas" data-champ="' + champ + '" data-d="-1" data-min="' + min + '" data-max="' + max + '" aria-label="Diminuer ' + label + '">\u2212</button>' +
+      '<input id="f-' + champ + '" data-champ="' + champ + '" inputmode="numeric" pattern="[0-9]*" aria-label="' + label + '" value="' + esc(v) + '">' +
+      '<button type="button" class="plus" data-action="pas" data-champ="' + champ + '" data-d="1" data-min="' + min + '" data-max="' + max + '" aria-label="Augmenter ' + label + '">+</button></div></div>';
+  }
+
+  function vueSaisie() {
+    var p = state.params, ctrl = controle(), calc = ctrl.ok ? SKS.calculer(entrees(), p) : null;
+    var h = '<main class="screen"><div style="display:flex;align-items:flex-end;justify-content:space-between"><div>' +
+      '<div class="kicker">Équipe ' + state.eq + (state.nom ? ' · ' + esc(state.nom) : '') + '</div><h1>Construction ' + state.k + '</h1></div>' +
+      '<button class="link" data-action="changer" style="min-height:44px">Changer d\u2019équipe</button></div>' + bandeau();
+    h += '<div class="seg" role="group" aria-label="Construction">' + [1, 2, 3].map(function (k) {
+      return '<button type="button" data-action="k" data-k="' + k + '" aria-pressed="' + (state.k === k) + '">Construction ' + k + '</button>'; }).join('') + '</div>';
+    h += '<div class="seg" role="group" aria-label="Type de saisie">' +
+      '<button type="button" data-action="type" data-t="officiel" aria-pressed="' + (state.type === 'officiel') + '">Résultat officiel</button>' +
+      '<button type="button" data-action="type" data-t="simulation" aria-pressed="' + (state.type === 'simulation') + '">Simulation</button></div>';
+    h += '<div class="card"><h2>Temps de construction <span class="sub" style="font-weight:400">(1 s à ' + Math.floor(p.tempsMax / 60) + ' min)</span></h2>' +
+      stepper('m', 'Minutes', '', 0, 5) + stepper('sec', 'Secondes', '', 0, 59) + '</div>';
+    h += '<div class="card">' + stepper('b', 'Briques utilisées', 'de 1 à ' + p.briquesMax, 0, p.briquesMax) + '</div>';
+    h += '<div class="card"><div style="display:flex;justify-content:space-between;align-items:baseline"><h2>Unités d\u2019élévation</h2>' +
+      '<div class="sub" style="font-size:13px">Élévation : <strong style="color:var(--ink)">' + (calc ? String(calc.elevationCm).replace('.', ',') + ' cm' : '—') + '</strong></div></div>' +
+      stepper('h', 'Hauteur', '\u00d7 ' + String(p.coefH).replace('.', ',') + ' cm par unité', 0, 100) +
+      stepper('l', 'Largeur', '\u00d7 ' + String(p.coefL).replace('.', ',') + ' cm par unité', 0, 100) +
+      stepper('ep', 'Épaisseur', '\u00d7 ' + String(p.coefE).replace('.', ',') + ' cm par unité', 0, 100) + '</div>';
+    if (state.touche && !ctrl.ok) h += '<div class="msg err">' + esc(ctrl.errors[0].message) + '</div>';
+    if (ctrl.ok && ctrl.warnings.length) h += '<div class="msg warn">' + esc(ctrl.warnings[0]) + ' Vérifiez votre décompte.</div>';
+    h += '<button class="btn split" data-action="voir"' + (ctrl.ok ? '' : ' disabled') + ' style="margin-top:auto"><span>' +
+      (ctrl.ok ? 'Voir le détail du calcul' : 'Complétez la saisie') + '</span>' +
+      (ctrl.ok ? '<span class="num" style="font-size:24px">' + SKS.euro(calc.net) + '</span>' : '') + '</button></main>';
+    return h;
+  }
+
+  function vueResultat() {
+    var calc = calcul(); if (!calc) { state.vue = 'saisie'; return vueSaisie(); }
+    var f = state.f, env = state.envoi, off = state.type === 'officiel';
+    var badge = off ? (env && env.etat === 'ok' ? '<span class="tag att">Officiel · à valider</span>' : '<span class="tag att">Officiel · à envoyer</span>')
+                    : '<span class="tag sim">Simulation</span>';
+    var h = '<main class="screen"><div style="display:flex;align-items:flex-start;justify-content:space-between"><div>' +
+      '<div class="kicker">Équipe ' + state.eq + ' · Construction ' + state.k + '</div><h1 style="font-size:30px">Résultat</h1></div>' + badge + '</div>' + bandeau();
+    // bilan C1 + C2 : secondaire
+    var bilan = '';
+    if (state.k === 2) {
+      var c1 = officiel(1);
+      if (c1) {
+        var b = SKS.bilanC1C2(c1.retenu, calc.net);
+        var prov = c1.statut !== 'validé' || !off || !(env && env.etat === 'ok' && env.statut === 'validé');
+        bilan = '<div class="bilan">Bilan C1 + C2 : ' + SKS.euro(b) + (prov ? ' (provisoire)' : '') + '</div>';
+      }
+    }
+    h += '<div class="card" style="padding:20px;gap:6px"><div class="hint" style="font-weight:600">Résultat de la construction ' + state.k + '</div>' +
+      '<div class="num big ' + cls(calc.net) + '">' + SKS.euro(calc.net) + '</div>' + bilan + '</div>';
+    h += '<div class="card" style="padding:6px 16px;gap:0">' +
+      ligneCalc('Gain', 'Élévation ' + String(calc.elevationCm).replace('.', ',') + ' cm \u00d7 ' + SKS.euro(state.params.gainCm), calc.gain, true) +
+      ligneCalc('Fondations', 'Forfait', -calc.fondations) +
+      ligneCalc('Temps', SKS.temps(f.m, f.sec) + ' = ' + calc.tempsS + ' s \u00d7 ' + SKS.euro(state.params.coutSeconde), -calc.coutTemps) +
+      ligneCalc('Briques', f.b + ' briques \u00d7 ' + SKS.euro(state.params.coutBrique), -calc.coutBriques) +
+      '<div class="line" style="min-height:56px"><div class="lbl" style="font-weight:700">Résultat</div><div class="num ' + cls(calc.net) + '" style="font-size:24px">' + SKS.euro(calc.net) + '</div></div></div>';
+    // état d'envoi
+    if (env && env.etat === 'ok') h += '<div class="msg ok">' + (off ? 'Envoyé à l\u2019animateur, qui valide le décompte.' : 'Simulation enregistrée.') + (env.doublon ? ' (déjà reçu)' : '') + '</div>';
+    else if (env && env.etat === 'hors-ligne') h += '<div class="msg warn">Enregistré sur ce téléphone. L\u2019envoi partira dès le retour du réseau.</div>';
+    else if (env && env.etat === 'attente') h += '<div class="msg info">Envoi en cours…</div>';
+    else if (env && env.etat === 'erreur') h += '<div class="msg err">' + esc(env.message || 'Envoi impossible.') + '</div>';
+    else if (off) h += '<p class="hint" style="margin:0">Un ouvrage non conforme est ramené à 0 € par l\u2019animateur.</p>';
+    var envoye = env && (env.etat === 'ok' || env.etat === 'hors-ligne' || env.etat === 'attente');
+    h += '<div style="margin-top:auto;display:flex;flex-direction:column;gap:10px">' +
+      (envoye ? '<button class="btn" data-action="nouvelle">Nouvelle saisie</button>'
+              : '<button class="btn" data-action="envoyer">' + (off ? 'Envoyer à l\u2019animateur' : 'Enregistrer la simulation') + '</button>') +
+      '<button class="btn sec" data-action="modifier">Modifier la saisie</button></div></main>';
+    return h;
+  }
+  function ligneCalc(l, d, m, gain) {
+    return '<div class="line"><div><div class="lbl">' + l + '</div><div class="sub">' + d + '</div></div>' +
+           '<div class="num ' + (gain ? 'pos' : 'neg') + '" style="font-size:22px">' + SKS.euro(m, gain) + '</div></div>';
+  }
+
+  function vueResultats() {
+    var h = '<main class="screen"><div><div class="kicker">Équipe ' + state.eq + (state.nom ? ' · ' + esc(state.nom) : '') + '</div><h1>Mes résultats</h1></div>' + bandeau();
+    var o1 = officiel(1), o2 = officiel(2);
+    if (o1 && o2) {
+      var prov = o1.statut !== 'validé' || o2.statut !== 'validé';
+      h += '<div class="card"><div class="bilan" style="border:0;margin:0;padding:0">Bilan C1 + C2 : ' + SKS.euro(SKS.bilanC1C2(o1.retenu, o2.retenu)) + (prov ? ' (provisoire)' : '') + '</div></div>';
+    }
+    var l = state.lignes.slice().sort(function (a, b) { return String(b.horodatage).localeCompare(String(a.horodatage)); });
+    if (!l.length) h += '<div class="card"><p class="hint" style="margin:0">Aucun résultat pour le moment.</p></div>';
+    l.forEach(function (x) {
+      var sim = x.type === 'simulation', nc = x.statut === 'non conforme';
+      var tag = sim ? '<span class="tag sim">Simulation</span>' : nc ? '<span class="tag nc">Non conforme</span>'
+              : x.statut === 'validé' ? '<span class="tag val">Officiel · validé</span>' : '<span class="tag att">Officiel · à valider</span>';
+      var montant = x.invalide ? '—' : SKS.euro(x.retenu, true);
+      h += '<div class="card" style="gap:6px;' + (sim ? 'border-style:dashed;border-color:var(--ctl)' : '') + '"><div style="display:flex;align-items:center;justify-content:space-between"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">' +
+        '<span class="lbl" style="font-weight:700">C' + x.k + '</span>' + tag + '</div><div class="num ' + (x.invalide ? '' : cls(x.retenu)) + '" style="font-size:24px">' + montant + '</div></div>' +
+        '<div class="sub" style="font-size:13px">' + (x.invalide ? 'Saisie à vérifier avec l\u2019animateur' : SKS.temps(x.minutes, x.secondes) + ' · ' + x.briques + ' briques · H' + x.h + ' L' + x.l + ' É' + x.e) + '</div></div>';
+    });
+    return h + '</main>';
+  }
+
+  function onglets() {
+    if (state.vue === 'accueil') return '';
+    var onResultats = state.vue === 'resultats';
+    return '<nav class="tabs" aria-label="Navigation"><button data-action="vue" data-v="saisie"' + (!onResultats ? ' aria-current="page"' : '') + '>Saisie</button>' +
+           '<button data-action="vue" data-v="resultats"' + (onResultats ? ' aria-current="page"' : '') + '>Mes résultats</button></nav>';
+  }
+
+  function render() {
+    var actif = document.activeElement, id = actif && actif.id, pos = actif && actif.selectionStart;
+    var v = state.vue;
+    var html = v === 'saisie' ? vueSaisie() : v === 'resultat' ? vueResultat() : v === 'resultats' ? vueResultats() : vueAccueil();
+    app.innerHTML = html + onglets();
+    if (id) { var el = document.getElementById(id); if (el) { el.focus(); try { if (pos !== null && pos !== undefined) el.setSelectionRange(pos, pos); } catch (e) { /* champ non texte */ } } }
+  }
+
+  /* ---------- actions ---------- */
+  function aller(v) { state.vue = v; if (v === 'resultats') actualiser().then(render); render(); window.scrollTo(0, 0); }
+  app.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-action]'); if (!b || b.disabled) return;
+    var a = b.getAttribute('data-action'), d = b.dataset;
+    if (a === 'equipe') { state.eq = Number(d.n); lsSet('sks.' + state.code + '.equipe', { eq: state.eq, nom: state.nom }); render(); }
+    else if (a === 'entrer') { lsSet('sks.' + state.code + '.equipe', { eq: state.eq, nom: state.nom }); actualiser().then(render); aller('saisie'); }
+    else if (a === 'changer') { aller('accueil'); }
+    else if (a === 'reessayer') { demarrer(); }
+    else if (a === 'k') { state.k = Number(d.k); state.envoi = null; render(); }
+    else if (a === 'type') { state.type = d.t; state.envoi = null; render(); }
+    else if (a === 'pas') {
+      var cur = Number(state.f[d.champ]); if (isNaN(cur)) cur = 0;
+      state.f[d.champ] = Math.max(Number(d.min), Math.min(Number(d.max), cur + Number(d.d))); state.touche = true; state.envoi = null; render();
+    }
+    else if (a === 'voir') { state.touche = true; if (controle().ok) { state.envoi = null; aller('resultat'); } else render(); }
+    else if (a === 'modifier') { aller('saisie'); }
+    else if (a === 'nouvelle') { state.f = { m: 0, sec: 0, b: 0, h: 0, l: 0, ep: 0 }; state.touche = false; state.envoi = null; aller('saisie'); }
+    else if (a === 'envoyer') { envoyer(); }
+    else if (a === 'vue') { aller(d.v); }
+  });
+  app.addEventListener('input', function (e) {
+    var t = e.target;
+    if (t.hasAttribute('data-nom')) { state.nom = t.value.slice(0, 40); lsSet('sks.' + state.code + '.equipe', { eq: state.eq, nom: state.nom }); return; }
+    var c = t.getAttribute('data-champ'); if (!c) return;
+    state.f[c] = t.value.replace(/[^0-9]/g, ''); state.touche = true; state.envoi = null; render();
+  });
+
+  function envoyer() {
+    var calc = calcul(); if (!calc) return;
+    var f = state.f;
+    var p = { action: 'submit', s: state.code, eq: state.eq, nom: state.nom, k: state.k, type: state.type,
+              m: Number(f.m), sec: Number(f.sec), b: Number(f.b), h: Number(f.h), l: Number(f.l), ep: Number(f.ep), cid: uuid() };
+    var fl = file(); fl.push(p); lsSet('sks.file', fl);
+    state.envoi = { cid: p.cid, etat: 'attente' };
+    render(); traiterFile();
+  }
+
+  /* ---------- démarrage ---------- */
+  function demarrer() {
+    state.chargement = true; state.erreur = ''; render();
+    if (!SKS.codeValide(state.code)) {
+      state.chargement = false; state.erreur = 'Scannez le QR code de l\u2019atelier pour commencer.'; render(); return;
+    }
+    apiSession().then(function (r) {
+      if (!r.ok) { state.erreur = r.error || 'Atelier introuvable.'; return; }
+      state.seance = r.seance; state.params = SKS.params(r.params);
+      lsSet('sks.' + state.code + '.seance', r);
+      if (r.seance.statut !== 'ouverte') state.erreur = 'Cet atelier est fermé.';
+    }, function () {
+      var c = lsGet('sks.' + state.code + '.seance', null);
+      if (c) { state.seance = c.seance; state.params = SKS.params(c.params); state.horsLigne = true; }
+      else state.erreur = 'Connexion impossible. Vérifiez votre réseau puis réessayez.';
+    }).then(function () {
+      var mem = lsGet('sks.' + state.code + '.equipe', null);
+      if (mem && mem.eq && state.seance && mem.eq <= state.seance.equipes) { state.eq = mem.eq; state.nom = mem.nom || ''; }
+      state.chargement = false; render(); traiterFile();
+    });
+  }
+  demarrer();
+})();
+</script>
+</body>
+</html>
