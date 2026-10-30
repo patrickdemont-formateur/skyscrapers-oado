@@ -156,6 +156,48 @@ var SKS = (function () {
   }
   function codeValide(code) { return /^SKS\d{3}_\d{2}[A-Z]?$/.test(String(code || '')); }
 
+  /* ---------- Synthèse d'une séance (espace animateur) ----------
+     lignes : [{ eq, k, type, statut, retenu }] ; seuls les résultats officiels comptent.
+     « Définitif » = validé, ou non conforme (0 €). Un résultat « à valider » est affiché mais pas compté.
+     Seules les équipes 1..nbEquipes sont prises en compte (les équipes inactives sont exclues). */
+  function synthese(lignes, nbEquipes, montantChallenge) {
+    var off = (lignes || []).filter(function (x) { return x.type === 'officiel' && x.statut !== 'remplacé'; });
+    var equipes = [], totaux = { 1: 0, 2: 0, 3: 0 }, enAttente = 0, c3 = [], c3Manquants = 0;
+    for (var eq = 1; eq <= nbEquipes; eq++) {
+      var e = { eq: eq, c: {}, bilan: null };
+      [1, 2, 3].forEach(function (k) {
+        var l = off.filter(function (x) { return Number(x.eq) === eq && Number(x.k) === k; }).pop();
+        var r;
+        if (!l) r = { etat: 'vide', retenu: null };
+        else if (l.statut === 'validé') r = { etat: 'valide', retenu: Number(l.retenu), id: l.id };
+        else if (l.statut === 'non conforme') r = { etat: 'non_conforme', retenu: 0, id: l.id };
+        else { r = { etat: 'a_valider', retenu: Number(l.retenu), id: l.id }; enAttente++; }
+        e.c[k] = r;
+        if (r.etat === 'valide' || r.etat === 'non_conforme') totaux[k] = r2(totaux[k] + r.retenu);
+      });
+      var d1 = e.c[1].etat === 'valide' || e.c[1].etat === 'non_conforme', d2 = e.c[2].etat === 'valide' || e.c[2].etat === 'non_conforme';
+      if (d1 && d2) e.bilan = bilanC1C2(e.c[1].retenu, e.c[2].retenu);
+      if (e.c[3].etat === 'valide' || e.c[3].etat === 'non_conforme') c3.push(e.c[3].retenu); else c3Manquants++;
+      equipes.push(e);
+    }
+    var ch = null;
+    if (montantChallenge !== null && montantChallenge !== undefined && montantChallenge !== '' && !isNaN(Number(montantChallenge))) {
+      var c = challenge(c3, montantChallenge);
+      ch = { montant: c.montant, somme: c.somme, ecart: c.ecart, remporte: c.remporte, manquants: c3Manquants, definitif: c3Manquants === 0 };
+    }
+    return { equipes: equipes, totaux: totaux, enAttente: enAttente, challenge: ch };
+  }
+
+  /* ---------- Noms d'équipe : comparaison insensible à la casse, aux accents et aux espaces ---------- */
+  function normaliserNom(t) {
+    var s = String(t === undefined || t === null ? '' : t).toLowerCase().replace(/\s+/g, ' ').trim();
+    return s.normalize ? s.normalize('NFD').replace(/[\u0300-\u036f]/g, '') : s;
+  }
+  function nomDejaPris(nom, autresNoms) {
+    var n = normaliserNom(nom);
+    return n !== '' && (autresNoms || []).some(function (x) { return normaliserNom(x) === n; });
+  }
+
   /* ---------- Formats d'affichage (français) ---------- */
   function milliers(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0'); }
   function euro(n, avecPlus) {
@@ -167,7 +209,7 @@ var SKS = (function () {
 
   return {
     DEFAULTS: DEFAULTS, params: params, valider: valider, calculer: calculer, resultatRetenu: resultatRetenu,
-    bilanC1C2: bilanC1C2, somme: somme, challenge: challenge, suggestionChallenge: suggestionChallenge,
+    bilanC1C2: bilanC1C2, somme: somme, challenge: challenge, synthese: synthese, normaliserNom: normaliserNom, nomDejaPris: nomDejaPris, suggestionChallenge: suggestionChallenge,
     moyennesHistoriques: moyennesHistoriques, jourDeLAnnee: jourDeLAnnee, codeSeance: codeSeance, codeValide: codeValide,
     euro: euro, temps: temps, r2: r2
   };
