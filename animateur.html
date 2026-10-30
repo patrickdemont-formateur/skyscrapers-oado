@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Skyscrapers · Espace animateur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#14202B;--mute:#566270;--bg:#F2F4F7;--card:#fff;--line:#D5DAE1;--navy:#1F3A5F;--red:#B3261E;--green:#1B7F4B;--wood:#F6E6CF;--woodink:#6B4310;--ctl:#8A94A1}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'Barlow',system-ui,-apple-system,'Segoe UI',sans-serif}
+#app{max-width:1100px;margin:0 auto;padding:20px 20px 60px}
+.num{font-family:'Barlow Condensed','Barlow',system-ui,sans-serif;font-weight:700}
+h1{margin:0;font-family:'Barlow Condensed','Barlow',system-ui,sans-serif;font-size:36px;line-height:1.05}
+h2{margin:0;font-size:18px}
+.top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.kicker{font-size:14px;color:var(--mute);font-weight:500}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:14px;display:flex;flex-direction:column;gap:12px}
+.hint{font-size:13px;color:var(--mute);line-height:1.4}
+button{font-family:inherit;cursor:pointer}
+.btn{min-height:46px;border-radius:12px;border:0;background:var(--navy);color:#fff;font-size:15px;font-weight:700;padding:0 18px}
+.btn.sec{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.btn.danger{background:#fff;color:var(--red);border:2px solid var(--red)}
+.btn.dark{background:var(--ink)}
+.btn[disabled]{background:#C3CAD3;color:#4A5563;border-color:#C3CAD3;cursor:not-allowed}
+.link{background:none;border:0;color:var(--navy);font-size:14px;font-weight:600;min-height:44px;text-decoration:underline}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.tabs{display:flex;gap:6px;background:#E1E6EC;border-radius:12px;padding:4px;margin-bottom:14px}
+.tabs button{flex:1;min-height:46px;border-radius:9px;border:0;background:transparent;font-size:16px;font-weight:600;color:var(--ink)}
+.tabs button[aria-pressed=true]{background:var(--navy);color:#fff;font-weight:700}
+.tag{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;border-radius:13px;font-size:12px;font-weight:700}
+.tag.ouv{background:#E3F3EA;color:#14583A}.tag.fer{background:var(--ink);color:#fff}.tag.att{background:var(--wood);color:var(--woodink)}.tag.nc{background:#fff;color:var(--red);border:2px solid var(--red)}
+.neg{color:var(--red)}.pos{color:var(--green)}.mut{color:var(--mute)}
+.msg{border-radius:12px;padding:10px 14px;font-size:14px;line-height:1.4;margin-bottom:12px}
+.msg.err{background:#FBE9E7;color:#7A1A14}.msg.ok{background:#E3F3EA;color:#14583A}.msg.info{background:#E6ECF4}.msg.warn{background:var(--wood);color:var(--woodink)}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:14px;font-weight:600}
+input[type=text],input[type=password],input[type=number],select{height:46px;border:1px solid var(--ctl);border-radius:10px;padding:0 12px;font-size:16px;font-family:inherit;color:var(--ink);background:#fff;min-width:0}
+.grid6{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.pending{background:var(--bg);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+table{width:100%;border-collapse:collapse}
+th{font-size:13px;color:var(--mute);text-align:right;font-weight:600;padding:6px 8px;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+td{padding:10px 8px;border-bottom:1px solid #E8ECF0;text-align:right;vertical-align:middle}
+td .num{font-size:22px}
+.sec2{font-style:italic;color:var(--mute)}
+.gauge{height:16px;border-radius:8px;background:#E1E6EC;border:1px solid #C3CAD3;overflow:hidden}
+.gauge>div{height:100%;background:var(--navy)}
+.gauge.ok>div{background:var(--green)}
+/* débriefing (projection) */
+.deb{max-width:none}
+.bloc{display:flex;flex-direction:column;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 22px;margin-bottom:16px}
+.bloc h3{margin:0;font-family:'Barlow Condensed','Barlow',sans-serif;font-size:34px}
+.blochead{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.cmp{display:grid;grid-template-columns:minmax(150px,230px) 1fr minmax(120px,170px);align-items:center;column-gap:16px;min-height:62px}
+.cmp .nom{font-size:24px;font-weight:700}.cmp .nom small{display:block;font-size:14px;font-weight:500;color:var(--mute)}
+.cmp .bil{display:block;font-size:15px;font-style:italic;color:var(--mute);font-weight:500}
+.track{position:relative;height:36px;background:#F2F4F7;border-radius:8px}
+.axe{position:absolute;left:50%;top:-4px;bottom:-4px;width:2px;background:var(--ink)}
+.bar{position:absolute;top:3px;bottom:3px;border-radius:5px}
+.bar.n{background:var(--red)}.bar.p{background:var(--green)}
+.hist{position:absolute;top:-6px;bottom:-6px;border-left:3px dashed #7B8794}
+.cmp .val{font-size:34px;text-align:right}
+.cmp .val.gros{font-size:30px}
+.verdict{border-radius:16px;padding:22px;text-align:center;font-family:'Barlow Condensed','Barlow',sans-serif;font-size:48px;font-weight:700}
+.verdict.ok{background:#E3F3EA;color:#14583A}.verdict.ko{background:#FBE9E7;color:#7A1A14}.verdict.att{background:var(--wood);color:var(--woodink)}
+.bigline{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.bigline .num{font-size:44px}
+.qr{width:260px;max-width:100%;background:#fff;padding:6px;border:1px solid var(--line);border-radius:10px}
+.qr svg{display:block;width:100%;height:auto}
+.lien{font-size:14px;word-break:break-all;background:var(--bg);padding:8px 10px;border-radius:8px}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #E8B873;outline-offset:2px}
+@media (max-width:760px){.grid6{grid-template-columns:repeat(3,minmax(0,1fr))}.cmp{grid-template-columns:1fr;row-gap:6px;padding-bottom:8px}.cmp .val{text-align:left}.bigline .num{font-size:34px}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="config.js"></script>
+<script src="engine.js"></script>
+<script src="qrcode.js"></script>
+<script>
+(function () {
+  'use strict';
+  var CFG = window.SKS_CONFIG || {};
+  var app = document.getElementById('app');
+  var TOKEN_KEY = 'sks.anim.token';
+
+  function esc(t) { return String(t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function jeton(v) { try { if (v === undefined) return sessionStorage.getItem(TOKEN_KEY) || ''; if (v) sessionStorage.setItem(TOKEN_KEY, v); else sessionStorage.removeItem(TOKEN_KEY); } catch (e) { return state.tokenMem; } return v; }
+  function cls(n) { return n < 0 ? 'neg' : (n > 0 ? 'pos' : ''); }
+  function heure(d) { return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2) + ':' + ('0' + d.getSeconds()).slice(-2); }
+
+  var state = {
+    vue: 'login', onglet: 'pilotage', deb: 'comparaison', code: '', seances: [], etat: null, token: '', tokenMem: '',
+    info: '', erreur: '', edition: null, saisie: null, majA: null, chargement: false
+  };
+  state.token = jeton() || '';
+
+  /* ---------- API ---------- */
+  function api(payload) {
+    if (!CFG.API_URL) return Promise.resolve({ ok: false, code: 'config', error: 'Adresse du serveur non renseignée (fichier config.js).' });
+    var ctrl = new AbortController(), t = setTimeout(function () { ctrl.abort(); }, 20000);
+    var corps = Object.assign({ token: state.token }, payload);
+    return fetch(CFG.API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(corps), signal: ctrl.signal })
+      .then(function (r) { clearTimeout(t); if (!r.ok) throw new Error('http'); return r.json(); })
+      .then(function (r) {
+        if (!r.ok && r.code === 'auth') { state.token = ''; jeton(''); state.vue = 'login'; state.erreur = 'Session expirée. Reconnectez-vous.'; }
+        return r;
+      }, function () { clearTimeout(t); return { ok: false, code: 'reseau', error: 'Connexion impossible. Vérifiez le réseau.' }; });
+  }
+
+  /* ---------- données ---------- */
+  function synthese() { var e = state.etat; return SKS.synthese(e.lignes, e.seance.equipes, e.seance.challenge); }
+  function nomEq(eq) { var e = state.etat.equipes.filter(function (x) { return x.eq === eq; })[0]; return e && e.nom ? e.nom : ''; }
+  function labelEq(eq) { return 'Équipe ' + eq + (nomEq(eq) ? ' · ' + esc(nomEq(eq)) : ''); }
+  function fermee() { return state.etat && state.etat.seance.statut !== 'ouverte'; }
+
+  function charger(silencieux) {
+    if (!state.code) return Promise.resolve();
+    return api({ action: 'anim_etat', s: state.code }).then(function (r) {
+      if (r.ok) { state.etat = r; state.majA = new Date(); }
+      else if (!silencieux) state.erreur = r.error;
+      return r;
+    });
+  }
+  function chargerSeances() {
+    return api({ action: 'anim_seances' }).then(function (r) { if (r.ok) state.seances = r.seances; else state.erreur = r.error; });
+  }
+  function ouvrir(code, onglet) {
+    state.code = code; state.vue = 'seance'; state.onglet = onglet || 'pilotage'; state.etat = null; state.edition = null; state.saisie = null;
+    state.chargement = true; render();
+    charger().then(function () { state.chargement = false; if (!state.etat) state.vue = 'seances'; render(); });
+  }
+
+  /* ---------- vues ---------- */
+  function vueLogin() {
+    return '<div class="top"><div><div class="kicker">Skyscrapers · OADO</div><h1>Espace animateur</h1></div></div>' + messages() +
+      '<div class="card" style="max-width:460px"><div class="field"><label for="code">Code animateur</label>' +
+      '<input id="code" type="password" autocomplete="current-password" data-code placeholder="Code défini dans le Google Sheet"></div>' +
+      '<button class="btn" data-action="login">Se connecter</button>' +
+      '<div class="hint">Le code se définit dans le Google Sheet : menu Skyscrapers &gt; Définir le code animateur.</div></div>';
+  }
+
+  function messages() {
+    return (state.erreur ? '<div class="msg err" role="alert">' + esc(state.erreur) + '</div>' : '') + (state.info ? '<div class="msg ok">' + esc(state.info) + '</div>' : '');
+  }
+
+  function vueSeances() {
+    var h = '<div class="top"><div><div class="kicker">Skyscrapers · OADO</div><h1>Séances</h1></div><button class="link" data-action="logout">Se déconnecter</button></div>' + messages();
+    h += '<div class="card"><h2>Nouvelle séance</h2><div class="row"><div class="field" style="min-width:200px"><label for="nbeq">Nombre d\u2019équipes</label>' +
+      '<select id="nbeq" data-nbeq><option>2</option><option>3</option><option>4</option></select></div>' +
+      '<button class="btn" data-action="creer" style="align-self:flex-end">Créer la séance</button></div>' +
+      '<div class="hint">Le code d\u2019atelier est généré automatiquement. N\u2019oubliez pas : les noms d\u2019équipe doivent être différents.</div></div>';
+    h += '<div class="card"><h2>Séances existantes</h2>';
+    if (!state.seances.length) h += '<div class="hint">Aucune séance pour le moment.</div>';
+    state.seances.forEach(function (s) {
+      h += '<div class="row" style="justify-content:space-between;border-top:1px solid #E8ECF0;padding-top:10px"><div><span class="num" style="font-size:26px">' + esc(s.code) + '</span> ' +
+        '<span class="tag ' + (s.statut === 'ouverte' ? 'ouv' : 'fer') + '">' + esc(s.statut) + '</span><div class="hint">' + s.equipes + ' équipes' +
+        (s.challenge !== null ? ' · challenge ' + SKS.euro(s.challenge) : '') + '</div></div>' +
+        '<button class="btn sec" data-action="ouvrir" data-code="' + esc(s.code) + '">Ouvrir</button></div>';
+    });
+    return h + '</div>';
+  }
+
+  function entete() {
+    var e = state.etat.seance;
+    return '<div class="top"><div><div class="kicker"><button class="link" data-action="retour" style="min-height:auto;padding:0">\u2190 Séances</button> · ' + e.equipes + ' équipes' +
+      (state.majA ? ' · mis à jour à ' + heure(state.majA) : '') + '</div><h1>Séance ' + esc(e.code) + ' <span class="tag ' + (e.statut === 'ouverte' ? 'ouv' : 'fer') + '" style="vertical-align:middle">' + esc(e.statut) + '</span></h1></div>' +
+      '<div class="row"><button class="btn sec" data-action="rafraichir">Actualiser</button><button class="link" data-action="logout">Se déconnecter</button></div></div>' + messages() +
+      '<div class="tabs" role="group" aria-label="Sections">' + [['pilotage', 'Pilotage'], ['debrief', 'Débriefing'], ['seance', 'Séance']].map(function (t) {
+        return '<button data-action="onglet" data-o="' + t[0] + '" aria-pressed="' + (state.onglet === t[0]) + '">' + t[1] + '</button>'; }).join('') + '</div>';
+  }
+
+  function champ(id, label, val, extra) {
+    return '<div class="field"><label for="' + id + '">' + label + '</label><input id="' + id + '" type="text" inputmode="numeric" ' + (extra || '') + ' value="' + esc(val) + '"></div>';
+  }
+
+  function cartePending(l) {
+    var ed = state.edition && state.edition.id === l.id ? state.edition : null;
+    var h = '<div class="pending"><div class="row" style="justify-content:space-between"><div><strong style="font-size:17px">' + labelEq(l.eq) + ' · C' + l.k + '</strong> <span class="tag att">à valider</span></div>' +
+      (l.invalide ? '<span class="msg err" style="margin:0">Saisie à vérifier</span>' : '<span class="num ' + cls(l.net) + '" style="font-size:28px">' + SKS.euro(l.net) + '</span>') + '</div>' +
+      '<div class="hint" style="font-size:14px">' + SKS.temps(l.minutes, l.secondes) + ' · ' + l.briques + ' briques · H' + l.h + ' L' + l.l + ' É' + l.e + (l.calc ? ' · élévation ' + String(l.calc.elevationCm).replace('.', ',') + ' cm' : '') + '</div>';
+    if (ed) {
+      h += '<div class="grid6">' + champ('ed-m', 'Minutes', ed.m, 'data-ed="m"') + champ('ed-sec', 'Secondes', ed.sec, 'data-ed="sec"') + champ('ed-b', 'Briques', ed.b, 'data-ed="b"') +
+        champ('ed-h', 'H', ed.h, 'data-ed="h"') + champ('ed-l', 'L', ed.l, 'data-ed="l"') + champ('ed-ep', 'É', ed.ep, 'data-ed="ep"') + '</div>' +
+        '<div class="row"><button class="btn" data-action="corr-ok" data-id="' + l.id + '">Enregistrer la correction</button><button class="btn sec" data-action="corr-non">Annuler</button></div>';
+    } else {
+      h += '<div class="row"><button class="btn" data-action="valider" data-id="' + l.id + '" data-s="validé">Valider</button>' +
+        '<button class="btn sec" data-action="corriger" data-id="' + l.id + '">Corriger</button>' +
+        '<button class="btn danger" data-action="valider" data-id="' + l.id + '" data-s="non conforme">Non conforme · résultat à 0 \u20ac</button></div>';
+    }
+    return h + '</div>';
+  }
+
+  function celluleTable(c) {
+    if (c.etat === 'vide') return '<span class="mut">\u2014</span>';
+    if (c.etat === 'a_valider') return '<span class="num sec2">' + SKS.euro(c.retenu) + '</span><br><span class="tag att">à valider</span>';
+    if (c.etat === 'non_conforme') return '<span class="num">0\u00a0\u20ac</span><br><span class="tag nc">non conforme</span>';
+    return '<span class="num ' + cls(c.retenu) + '">' + SKS.euro(c.retenu) + '</span>';
+  }
+
+  function vuePilotage() {
+    var e = state.etat, syn = synthese(), ferme = fermee(), h = '';
+    var pend = e.lignes.filter(function (x) { return x.type === 'officiel' && x.statut === 'à valider'; });
+    h += '<div class="card"><div class="row" style="justify-content:space-between"><h2>À valider (' + pend.length + ')</h2></div>';
+    if (ferme) h += '<div class="msg warn" style="margin:0">Séance clôturée : rouvrez-la (onglet Séance) pour modifier un résultat.</div>';
+    else if (!pend.length) h += '<div class="hint">Aucun résultat en attente. Les envois des équipes apparaissent ici automatiquement.</div>';
+    else pend.forEach(function (l) { h += cartePending(l); });
+    if (!ferme) {
+      var sa = state.saisie;
+      h += '<div style="border-top:1px solid #E8ECF0;padding-top:10px"><button class="link" data-action="saisie-ouvrir" style="min-height:auto">' + (sa ? 'Masquer la saisie directe' : 'Saisie directe (résultat communiqué à voix haute)') + '</button>';
+      if (sa) {
+        h += '<div class="row" style="margin:8px 0"><div class="field"><label for="sa-eq">Équipe</label><select id="sa-eq" data-sa="eq">' +
+          state.etat.equipes.map(function (q) { return '<option value="' + q.eq + '"' + (Number(sa.eq) === q.eq ? ' selected' : '') + '>' + labelEq(q.eq).replace(/&#39;/g, "'") + '</option>'; }).join('') + '</select></div>' +
+          '<div class="field"><label for="sa-k">Construction</label><select id="sa-k" data-sa="k">' + [1, 2, 3].map(function (k) { return '<option value="' + k + '"' + (Number(sa.k) === k ? ' selected' : '') + '>C' + k + '</option>'; }).join('') + '</select></div></div>' +
+          '<div class="grid6">' + champ('sa-m', 'Minutes', sa.m, 'data-sa="m"') + champ('sa-sec', 'Secondes', sa.sec, 'data-sa="sec"') + champ('sa-b', 'Briques', sa.b, 'data-sa="b"') +
+          champ('sa-h', 'H', sa.h, 'data-sa="h"') + champ('sa-l', 'L', sa.l, 'data-sa="l"') + champ('sa-ep', 'É', sa.ep, 'data-sa="ep"') + '</div>' +
+          '<div class="row" style="margin-top:8px"><button class="btn" data-action="saisie-envoyer">Enregistrer comme résultat validé</button></div>';
+      }
+      h += '</div>';
+    }
+    h += '</div>';
+
+    h += '<div class="card"><h2>Résultats par équipe</h2><table><thead><tr><th>Équipe</th><th>C1</th><th>C2</th><th>C3</th><th class="sec2">Bilan C1+C2</th></tr></thead><tbody>';
+    syn.equipes.forEach(function (q) {
+      h += '<tr><td><strong style="font-size:17px">' + labelEq(q.eq) + '</strong></td><td>' + celluleTable(q.c[1]) + '</td><td>' + celluleTable(q.c[2]) + '</td><td>' + celluleTable(q.c[3]) + '</td>' +
+        '<td class="sec2">' + (q.bilan === null ? '\u2014' : SKS.euro(q.bilan)) + '</td></tr>';
+    });
+    h += '<tr><td><strong>Total validé</strong></td><td><span class="num ' + cls(syn.totaux[1]) + '">' + SKS.euro(syn.totaux[1]) + '</span></td><td><span class="num ' + cls(syn.totaux[2]) + '">' + SKS.euro(syn.totaux[2]) + '</span></td>' +
+      '<td><span class="num ' + cls(syn.totaux[3]) + '">' + SKS.euro(syn.totaux[3]) + '</span></td><td></td></tr></tbody></table></div>';
+
+    h += blocChallengeSaisie(syn, ferme);
+    return h;
+  }
+
+  function blocChallengeSaisie(syn, ferme) {
+    var e = state.etat, sug = SKS.suggestionChallenge(e.seance.equipes), ch = syn.challenge;
+    var h = '<div class="card"><h2>Challenge de la construction 3</h2>' +
+      '<div class="hint">Montant collectif, négocié avec les équipes : les résultats de la construction 3 de toutes les équipes sont additionnés, une contre-performance peut être compensée.</div>' +
+      '<div class="row"><div class="field"><label for="montant">Montant retenu (\u20ac)</label><input id="montant" type="text" inputmode="numeric" data-montant value="' + (e.seance.challenge === null ? '' : esc(e.seance.challenge)) + '"' + (ferme ? ' disabled' : '') + '></div>' +
+      '<button class="btn" data-action="challenge"' + (ferme ? ' disabled' : '') + ' style="align-self:flex-end">Enregistrer</button></div>' +
+      '<div class="hint">Repère : ' + SKS.euro(sug.parEquipe) + ' par équipe (' + SKS.euro(sug.maxParEquipe) + ' maximum), soit ' + SKS.euro(sug.total) + ' pour ' + e.seance.equipes + ' équipes. ' +
+      (ferme ? '' : '<button class="link" data-action="challenge-sug" style="min-height:auto">Utiliser ce repère</button>') + '</div>';
+    if (ch) {
+      var pct = ch.montant > 0 ? Math.max(0, Math.min(100, ch.somme / ch.montant * 100)) : 0;
+      h += '<div class="bigline"><div>Somme des résultats C3 validés : <span class="num ' + cls(ch.somme) + '">' + SKS.euro(ch.somme) + '</span></div><div class="mut">sur ' + SKS.euro(ch.montant) + '</div></div>' +
+        '<div class="gauge' + (ch.remporte ? ' ok' : '') + '" role="img" aria-label="Progression du challenge : ' + Math.round(pct) + ' pour cent"><div style="width:' + pct + '%"></div></div>' +
+        '<div class="hint">' + (ch.definitif ? (ch.remporte ? 'Challenge remporté.' : 'Challenge non atteint.') : ch.manquants + ' équipe(s) sans résultat C3 validé : résultat provisoire.') + '</div>';
+    }
+    return h + '</div>';
+  }
+
+  /* ---------- Débriefing (projection) ---------- */
+  function plafond(syn, hist) {
+    var m = 0;
+    syn.equipes.forEach(function (q) { [1, 2, 3].forEach(function (k) { var c = q.c[k]; if ((c.etat === 'valide') && Math.abs(c.retenu) > m) m = Math.abs(c.retenu); }); });
+    [1, 2, 3].forEach(function (k) { if (hist && hist[k] !== null && Math.abs(hist[k]) > m) m = Math.abs(hist[k]); });
+    return Math.max(5000, Math.ceil(m / 5000) * 5000);
+  }
+  function pos(v, M) { return 50 + (v / M) * 50; }
+
+  function blocConstruction(k, syn, M, hist) {
+    var moy = hist && hist.moyennes ? hist.moyennes[k] : null;
+    var h = '<section class="bloc" aria-label="Construction ' + k + '"><div class="blochead"><h3>Construction ' + k + '</h3>' +
+      (moy !== null ? '<div class="mut" style="font-size:15px">moyenne historique : ' + SKS.euro(moy) + '</div>' : '') + '</div>';
+    syn.equipes.forEach(function (q) {
+      var c = q.c[k], track = '<div class="axe"></div>', val;
+      if (moy !== null) track += '<span class="hist" style="left:' + pos(moy, M).toFixed(2) + '%"></span>';
+      if (c.etat === 'valide') {
+        var p = pos(c.retenu, M), g = Math.min(p, 50), w = Math.abs(p - 50);
+        track += '<div class="bar ' + (c.retenu < 0 ? 'n' : 'p') + '" style="left:' + g.toFixed(2) + '%;width:' + w.toFixed(2) + '%"></div>';
+        val = '<span class="num val ' + cls(c.retenu) + '">' + SKS.euro(c.retenu, true) + '</span>';
+      } else if (c.etat === 'non_conforme') val = '<span class="tag nc" style="font-size:16px;min-height:34px">Non conforme · 0\u00a0\u20ac</span>';
+      else if (c.etat === 'a_valider') val = '<span class="tag att" style="font-size:16px;min-height:34px">en attente</span>';
+      else val = '<span class="mut num val">\u2014</span>';
+      h += '<div class="cmp"><div class="nom">Équipe ' + q.eq + (nomEq(q.eq) ? '<small>' + esc(nomEq(q.eq)) + '</small>' : '') +
+        (k === 2 && q.bilan !== null ? '<span class="bil">Bilan C1 + C2 : ' + SKS.euro(q.bilan) + '</span>' : '') + '</div><div class="track">' + track + '</div><div style="text-align:right">' + val + '</div></div>';
+    });
+    return h + '</section>';
+  }
+
+  function vueDebrief() {
+    var syn = synthese(), hist = state.etat.historique, M = plafond(syn, hist && hist.moyennes);
+    var h = '<div class="row" style="justify-content:space-between;margin-bottom:12px"><div class="tabs" style="margin:0;min-width:320px" role="group" aria-label="Débriefing">' +
+      '<button data-action="deb" data-d="comparaison" aria-pressed="' + (state.deb === 'comparaison') + '">Comparaison des équipes</button>' +
+      '<button data-action="deb" data-d="challenge" aria-pressed="' + (state.deb === 'challenge') + '">Challenge</button></div>' +
+      '<button class="btn sec" data-action="plein-ecran">Plein écran</button></div>';
+    if (syn.enAttente) h += '<div class="msg warn">' + syn.enAttente + ' résultat(s) restent à valider : ils ne figurent pas encore dans le débriefing.</div>';
+    if (state.deb === 'comparaison') {
+      h += [1, 2, 3].map(function (k) { return blocConstruction(k, syn, M, hist); }).join('');
+      if (hist && hist.lignes > 0) h += '<div class="hint">Trait pointillé : moyenne historique par équipe (' + hist.lignes + ' résultats conformes, ' + hist.seances + ' séance(s) archivée(s)).</div>';
+    } else h += vueDebriefChallenge(syn);
+    return h;
+  }
+
+  function vueDebriefChallenge(syn) {
+    var ch = syn.challenge;
+    if (!ch) return '<div class="bloc"><h3>Challenge</h3><div class="hint" style="font-size:18px">Aucun montant de challenge n\u2019est défini. Saisissez-le dans l\u2019onglet Pilotage.</div></div>';
+    var pct = ch.montant > 0 ? Math.max(0, Math.min(100, ch.somme / ch.montant * 100)) : 0;
+    var h = '<div class="bloc"><div class="bigline"><div><div class="mut">Challenge de la construction 3</div><span class="num">' + SKS.euro(ch.montant) + '</span></div>' +
+      '<div style="text-align:right"><div class="mut">Somme des résultats</div><span class="num ' + cls(ch.somme) + '">' + SKS.euro(ch.somme) + '</span></div></div>' +
+      '<div class="gauge' + (ch.remporte ? ' ok' : '') + '" style="height:26px;border-radius:13px" role="img" aria-label="Progression du challenge : ' + Math.round(pct) + ' pour cent"><div style="width:' + pct + '%"></div></div></div>';
+    h += '<div class="verdict ' + (!ch.definitif ? 'att' : (ch.remporte ? 'ok' : 'ko')) + '">' + (!ch.definitif ? 'Résultat provisoire : ' + ch.manquants + ' équipe(s) en attente' :
+      (ch.remporte ? 'Challenge remporté : ' + SKS.euro(ch.ecart, true) : 'Challenge non atteint : ' + SKS.euro(ch.ecart))) + '</div>';
+    h += '<div class="bloc" style="margin-top:16px"><h3>Contribution de chaque équipe (construction 3)</h3>';
+    var M = Math.max(5000, Math.ceil(Math.max.apply(null, syn.equipes.map(function (q) { return Math.abs(q.c[3].retenu || 0); }).concat([0])) / 5000) * 5000);
+    syn.equipes.forEach(function (q) {
+      var c = q.c[3], track = '<div class="axe"></div>', val;
+      if (c.etat === 'valide') { var p = pos(c.retenu, M); track += '<div class="bar ' + (c.retenu < 0 ? 'n' : 'p') + '" style="left:' + Math.min(p, 50).toFixed(2) + '%;width:' + Math.abs(p - 50).toFixed(2) + '%"></div>'; val = '<span class="num val ' + cls(c.retenu) + '">' + SKS.euro(c.retenu, true) + '</span>'; }
+      else if (c.etat === 'non_conforme') val = '<span class="tag nc" style="font-size:16px;min-height:34px">Non conforme · 0\u00a0\u20ac</span>';
+      else if (c.etat === 'a_valider') val = '<span class="tag att" style="font-size:16px;min-height:34px">en attente</span>';
+      else val = '<span class="mut num val">\u2014</span>';
+      h += '<div class="cmp"><div class="nom">Équipe ' + q.eq + (nomEq(q.eq) ? '<small>' + esc(nomEq(q.eq)) + '</small>' : '') + '</div><div class="track">' + track + '</div><div style="text-align:right">' + val + '</div></div>';
+    });
+    return h + '</div>';
+  }
+
+  /* ---------- Onglet Séance ---------- */
+  function qrSvg(texte) {
+    try { if (typeof qrcode !== 'function' || !texte) return ''; var q = qrcode(0, 'M'); q.addData(texte); q.make(); return q.createSvgTag({ cellSize: 6, margin: 2, scalable: true }); }
+    catch (e) { return ''; }
+  }
+  function vueSeance() {
+    var e = state.etat, s = e.seance, ferme = fermee(), h = '';
+    h += '<div class="card"><h2>Accès des équipes</h2>' + (s.lien
+      ? '<div class="row" style="align-items:flex-start"><div class="qr" role="img" aria-label="QR code de la séance ' + esc(s.code) + '">' + qrSvg(s.lien) + '</div><div style="flex:1;min-width:240px;display:flex;flex-direction:column;gap:8px">' +
+        '<div class="lien">' + esc(s.lien) + '</div><div class="row"><button class="btn sec" data-action="copier">Copier le lien</button></div>' +
+        '<div class="hint">Les équipes scannent ce QR code. Le code d\u2019atelier <strong>' + esc(s.code) + '</strong> est inclus dans le lien.</div></div></div>'
+      : '<div class="msg warn" style="margin:0">Adresse de l\u2019application non renseignée (feuille Parametres, cellule B13).</div>') + '</div>';
+    h += '<div class="card"><h2>Noms d\u2019équipe</h2><div class="msg warn" style="margin:0">Rappel : les noms d\u2019équipe doivent être différents.</div>';
+    e.equipes.forEach(function (q) {
+      h += '<div class="row"><div style="width:90px;font-weight:700">Équipe ' + q.eq + '</div><input id="nom-' + q.eq + '" type="text" maxlength="40" data-nom="' + q.eq + '" value="' + esc(q.nom) + '" placeholder="Pas encore nommée" style="flex:1;min-width:180px" aria-label="Nom de l\u2019équipe ' + q.eq + '">' +
+        '<button class="btn sec" data-action="nommer" data-eq="' + q.eq + '">Enregistrer</button></div>';
+    });
+    h += '<div class="hint">Les équipes peuvent aussi nommer leur équipe depuis leur téléphone tant que le nom est vide ; ensuite seul l\u2019animateur le modifie.</div></div>';
+    h += '<div class="card"><h2>Clôture</h2>' + (ferme
+      ? '<div class="hint">Séance clôturée : les équipes consultent leurs résultats en lecture seule. Les résultats sont archivés.</div><div class="row"><button class="btn sec" data-action="rouvrir">Rouvrir la séance</button></div>'
+      : '<div class="hint">La clôture archive les résultats validés (pour les moyennes historiques) et passe l\u2019application des équipes en lecture seule.</div><div class="row"><button class="btn dark" data-action="cloturer">Clôturer et archiver</button></div>') + '</div>';
+    return h;
+  }
+
+  function vueSeanceComplete() {
+    if (!state.etat) return '<p class="hint">Chargement\u2026</p>';
+    var corps = state.onglet === 'debrief' ? vueDebrief() : state.onglet === 'seance' ? vueSeance() : vuePilotage();
+    return entete() + corps;
+  }
+
+  function render() {
+    var a = document.activeElement, id = a && a.id, p = a && a.selectionStart;
+    var html = state.vue === 'login' ? vueLogin() : state.vue === 'seances' ? vueSeances() : vueSeanceComplete();
+    app.className = state.vue === 'seance' && state.onglet === 'debrief' ? 'deb' : '';
+    app.innerHTML = html;
+    if (id) { var el = document.getElementById(id); if (el) { el.focus(); try { if (p !== null && p !== undefined) el.setSelectionRange(p, p); } catch (e) { /* champ non texte */ } } }
+  }
+
+  /* ---------- actions ---------- */
+  function effacer() { state.info = ''; state.erreur = ''; }
+  function apresAction(r, okMsg) {
+    if (!r.ok) { state.erreur = r.error || 'Action impossible.'; render(); return Promise.resolve(r); }
+    state.erreur = ''; state.info = okMsg || ''; return charger().then(function () { render(); return r; });
+  }
+  function valNum(v) { return v === '' ? NaN : Number(v); }
+
+  app.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-action]'); if (!b || b.disabled) return;
+    var a = b.getAttribute('data-action'), d = b.dataset;
+    effacer();
+    if (a === 'login') {
+      var c = document.getElementById('code').value;
+      api({ action: 'anim_login', code: c, token: '' }).then(function (r) {
+        if (!r.ok) { state.erreur = r.error; render(); return; }
+        state.token = r.token; state.tokenMem = r.token; jeton(r.token);
+        chargerSeances().then(function () { state.vue = 'seances'; render(); });
+      });
+    }
+    else if (a === 'logout') { state.token = ''; jeton(''); state.vue = 'login'; state.etat = null; render(); }
+    else if (a === 'retour') { chargerSeances().then(function () { state.vue = 'seances'; state.etat = null; render(); }); }
+    else if (a === 'ouvrir') { ouvrir(d.code); }
+    else if (a === 'creer') {
+      var n = Number(document.getElementById('nbeq').value);
+      api({ action: 'anim_creer', equipes: n }).then(function (r) {
+        if (!r.ok) { state.erreur = r.error; render(); return; }
+        ouvrir(r.code, 'seance'); state.info = 'Séance ' + r.code + ' créée. Projetez le QR code aux équipes.';
+      });
+    }
+    else if (a === 'onglet') { state.onglet = d.o; render(); window.scrollTo(0, 0); }
+    else if (a === 'deb') { state.deb = d.d; render(); }
+    else if (a === 'rafraichir') { charger().then(render); }
+    else if (a === 'valider') { api({ action: 'anim_valider', s: state.code, id: d.id, statut: d.s }).then(function (r) { apresAction(r, d.s === 'validé' ? 'Résultat validé.' : 'Marqué non conforme : résultat à 0 \u20ac.'); }); }
+    else if (a === 'corriger') {
+      var l = state.etat.lignes.filter(function (x) { return x.id === d.id; })[0];
+      state.edition = { id: d.id, m: l.minutes, sec: l.secondes, b: l.briques, h: l.h, l: l.l, ep: l.e }; render();
+    }
+    else if (a === 'corr-non') { state.edition = null; render(); }
+    else if (a === 'corr-ok') {
+      var ed = state.edition;
+      api({ action: 'anim_corriger', s: state.code, id: ed.id, m: valNum(ed.m), sec: valNum(ed.sec), b: valNum(ed.b), h: valNum(ed.h), l: valNum(ed.l), ep: valNum(ed.ep) }).then(function (r) {
+        if (r.ok) state.edition = null; apresAction(r, 'Correction enregistrée.');
+      });
+    }
+    else if (a === 'saisie-ouvrir') { state.saisie = state.saisie ? null : { eq: 1, k: 1, m: '', sec: '', b: '', h: '', l: '', ep: '' }; render(); }
+    else if (a === 'saisie-envoyer') {
+      var s = state.saisie;
+      api({ action: 'anim_saisir', s: state.code, eq: Number(s.eq), k: Number(s.k), m: valNum(s.m), sec: valNum(s.sec), b: valNum(s.b), h: valNum(s.h), l: valNum(s.l), ep: valNum(s.ep) }).then(function (r) {
+        if (r.ok) state.saisie = null; apresAction(r, 'Résultat enregistré et validé.');
+      });
+    }
+    else if (a === 'challenge') {
+      api({ action: 'anim_challenge', s: state.code, montant: document.getElementById('montant').value.replace(/\s/g, '') }).then(function (r) { apresAction(r, 'Challenge enregistré.'); });
+    }
+    else if (a === 'challenge-sug') { document.getElementById('montant').value = String(SKS.suggestionChallenge(state.etat.seance.equipes).total); }
+    else if (a === 'nommer') {
+      var inp = document.getElementById('nom-' + d.eq);
+      api({ action: 'anim_nommer', s: state.code, eq: Number(d.eq), nom: inp.value }).then(function (r) { apresAction(r, 'Nom enregistré.'); });
+    }
+    else if (a === 'copier') {
+      var lien = state.etat.seance.lien;
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(lien).then(function () { state.info = 'Lien copié.'; render(); }, function () { state.erreur = 'Copie impossible : sélectionnez le lien à la main.'; render(); });
+      else { state.erreur = 'Copie impossible : sélectionnez le lien à la main.'; render(); }
+    }
+    else if (a === 'cloturer') {
+      var go = function (forcer) {
+        api({ action: 'anim_cloturer', s: state.code, forcer: forcer }).then(function (r) {
+          if (!r.ok && r.code === 'attente') {
+            if (window.confirm(r.enAttente + ' résultat(s) officiel(s) restent à valider. Ils ne seront pas archivés. Clôturer quand même ?')) go(true); else render();
+            return;
+          }
+          apresAction(r, r.ok ? 'Séance clôturée. ' + r.archives + ' résultat(s) archivé(s).' : '');
+        });
+      };
+      if (window.confirm('Clôturer la séance ' + state.code + ' ? Les équipes passeront en lecture seule et les résultats seront archivés.')) go(false);
+    }
+    else if (a === 'rouvrir') { api({ action: 'anim_rouvrir', s: state.code }).then(function (r) { apresAction(r, 'Séance rouverte.'); }); }
+    else if (a === 'plein-ecran') { var el = document.documentElement; if (document.fullscreenElement) document.exitFullscreen(); else if (el.requestFullscreen) el.requestFullscreen(); }
+  });
+
+  app.addEventListener('input', function (e) {
+    var t = e.target;
+    if (t.hasAttribute('data-ed') && state.edition) state.edition[t.getAttribute('data-ed')] = t.value.replace(/[^0-9]/g, '');
+    else if (t.hasAttribute('data-sa') && state.saisie) state.saisie[t.getAttribute('data-sa')] = t.value.replace(/[^0-9]/g, '');
+  });
+  app.addEventListener('change', function (e) {
+    var t = e.target;
+    if (t.hasAttribute('data-sa') && state.saisie && (t.tagName === 'SELECT')) state.saisie[t.getAttribute('data-sa')] = t.value;
+  });
+  app.addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target.hasAttribute('data-code')) { var b = app.querySelector('[data-action=login]'); if (b) b.click(); } });
+
+  /* ---------- actualisation automatique (10 s) ---------- */
+  setInterval(function () {
+    if (state.vue !== 'seance' || !state.etat || document.hidden) return;
+    var a = document.activeElement;
+    if (state.edition || state.saisie || (a && (a.tagName === 'INPUT' || a.tagName === 'SELECT'))) return;   // ne jamais écraser une saisie en cours
+    charger(true).then(function (r) { if (r && r.ok) render(); });
+  }, 10000);
+
+  /* ---------- démarrage ---------- */
+  if (state.token) chargerSeances().then(function () { if (state.token) { state.vue = 'seances'; } render(); });
+  else render();
+})();
+</script>
+</body>
+</html>
